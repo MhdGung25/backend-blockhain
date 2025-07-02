@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // ✅ Import semua controller yang digunakan
-use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\UsahaController;
 use App\Http\Controllers\TujuanController;
@@ -17,8 +17,8 @@ use App\Http\Controllers\UmkmProfileController;
 */
 
 // 🔐 Authentication
-Route::post('/register', [AuthenticationController::class, 'register']);
-Route::post('/login', [AuthenticationController::class, 'login'])->name('login');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // 🔑 Forgot password
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);

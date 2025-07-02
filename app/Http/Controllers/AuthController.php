@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 
-class AuthenticationController extends Controller
+class AuthController extends Controller
 {
     public function register(RegisterRequest $request)
     {
