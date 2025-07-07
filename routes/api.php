@@ -1,45 +1,62 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-// ✅ Import semua controller
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\UsahaController;
-use App\Http\Controllers\TujuanController;
-use App\Http\Controllers\UmkmProfileController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\KeuanganController;
+use App\Http\Controllers\Api\PengajuanController;
+use App\Http\Controllers\Api\ProfilUMKMController;
+use App\Http\Controllers\Api\TransaksiController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
+| Endpoint untuk konsumsi aplikasi frontend (misalnya Flutter)
 */
 
-// 🔐 Auth
+//
+// 🟡 AUTH - Register & Login (Public)
+//
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
-// 🔑 Forgot Password
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+//
+// 🔐 PROTECTED ROUTES - Hanya bisa diakses jika sudah login
+//
+Route::middleware('auth:sanctum')->group(function () {
 
-// 🏪 Usaha
-Route::post('/usaha', [UsahaController::class, 'store']);
+    // 🔐 Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-// 🎯 Tujuan UMKM
-Route::get('/tujuan', [TujuanController::class, 'index']);
-Route::post('/tujuan', [TujuanController::class, 'store']);
-
-// 🧾 Profil UMKM & Dashboard (dilindungi Sanctum)
-Route::middleware('auth:sanctum')->prefix('umkm')->group(function () {
-    // 📄 Profil UMKM
-    Route::get('/', [UmkmProfileController::class, 'apiIndex']);
-    Route::post('/', [UmkmProfileController::class, 'apiStore']);
-    Route::get('/{id}', [UmkmProfileController::class, 'apiShow']);
-    Route::put('/{id}', [UmkmProfileController::class, 'apiUpdate']);
-    Route::delete('/{id}', [UmkmProfileController::class, 'apiDestroy']);
-
-    // 📊 Dashboard UMKM
+    // 🔵 Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    // 💰 Keuangan
+    Route::get('/keuangan', [KeuanganController::class, 'index']);   
+    Route::post('/keuangan', [KeuanganController::class, 'store']);  
+
+    // 🟢 Transaksi
+    Route::get('/transaksi', [TransaksiController::class, 'index']);
+    Route::post('/transaksi', [TransaksiController::class, 'store']);
+
+    // 🟣 Profil UMKM
+    Route::get('/profil-umkm', [ProfilUMKMController::class, 'show']);
+    Route::post('/profil-umkm', [ProfilUMKMController::class, 'update']);
+
+    // 🔴 Pengajuan Modal
+    Route::get('/pengajuan', [PengajuanController::class, 'status']);
+    Route::post('/pengajuan', [PengajuanController::class, 'store']);
+
+    //
+    // 🧑‍💼 ADMIN ONLY - Middleware Role Admin
+    //
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/pengajuan/all', [PengajuanController::class, 'index']);
+        Route::put('/pengajuan/verifikasi/{id}', [PengajuanController::class, 'verifikasi']);
+
+        Route::get('/admin-dashboard', function () {
+            return response()->json(['message' => 'Khusus Admin']);
+        });
+    });
 });

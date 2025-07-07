@@ -21,7 +21,7 @@ return new class extends Migration
     $table->string('no_telepon', 20);
     $table->string('email');
     $table->year('tahun_berdiri');
-    $table->integer('jumlah_karyawan');
+   $table->integer('jumlah_karyawan')->nullable();
     $table->timestamps();
         });
     }
