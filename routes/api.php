@@ -13,8 +13,8 @@ use App\Http\Controllers\Api\BlockchainController;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-| Endpoint untuk konsumsi aplikasi frontend (misalnya Flutter)
-| Semua route yang membutuhkan autentikasi dibungkus dalam middleware 'auth:sanctum'
+| Endpoint untuk konsumsi aplikasi frontend (misalnya Flutter).
+| Semua route yang membutuhkan autentikasi dibungkus dengan middleware 'auth:sanctum'.
 */
 
 // 🟡 AUTH - Register & Login (Public)
@@ -27,8 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // 🔐 Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // 🔵 Dashboard
+    // 🔵 Dashboard (Untuk UMKM)
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/umkm/dashboard', [DashboardController::class, 'index']);
 
     // 💰 Keuangan
     Route::get('/keuangan', [KeuanganController::class, 'index']);
@@ -45,20 +46,24 @@ Route::middleware('auth:sanctum')->group(function () {
     // 🔴 Pengajuan Modal
     Route::get('/pengajuan', [PengajuanController::class, 'status']);
     Route::post('/pengajuan', [PengajuanController::class, 'store']);
+    
 
     // 🔗 Blockchain Hash Storage
     Route::post('/store-hash', [BlockchainController::class, 'storeHash']);
-
-    // Tambahkan route untuk mendapatkan riwayat hash blockchain
     Route::get('/hash-history', [BlockchainController::class, 'hashHistory']);
 
-    // 🧑‍💼 ADMIN ONLY - Hanya bisa diakses oleh user dengan role admin
+    // 🧑‍💼 ADMIN ONLY - Khusus user dengan role admin
     Route::middleware('role:admin')->group(function () {
+
+        // Manajemen Pengajuan
         Route::get('/pengajuan/all', [PengajuanController::class, 'index']);
         Route::put('/pengajuan/verifikasi/{id}', [PengajuanController::class, 'verifikasi']);
 
+        // Admin Dashboard Info
         Route::get('/admin-dashboard', function () {
             return response()->json(['message' => 'Khusus Admin']);
         });
+
     });
+
 });

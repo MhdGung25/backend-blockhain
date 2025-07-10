@@ -20,7 +20,11 @@ class TransaksiController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json($transaksi, 200);
+        return response()->json([
+            'success' => true,
+            'message' => '✅ Data transaksi ditemukan',
+            'data'    => $transaksi,
+        ], 200);
     }
 
     public function store(Request $request)
@@ -31,20 +35,21 @@ class TransaksiController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'jenis'     => 'required|in:pemasukan,pengeluaran',
-            'jumlah'    => 'required|numeric',
+            'jumlah'    => 'required|numeric|min:1',
             'deskripsi' => 'nullable|string|max:255',
         ]);
 
         $transaksi = Transaksi::create([
             'user_id'   => $user->id,
-            'jenis'     => $request->jenis,
-            'jumlah'    => $request->jumlah,
-            'deskripsi' => $request->deskripsi ?? '',
+            'jenis'     => $validated['jenis'],
+            'jumlah'    => $validated['jumlah'],
+            'deskripsi' => $validated['deskripsi'] ?? '',
         ]);
 
         return response()->json([
+            'success' => true,
             'message' => '✅ Transaksi berhasil disimpan',
             'data'    => $transaksi,
         ], 201);

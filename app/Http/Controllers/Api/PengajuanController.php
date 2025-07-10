@@ -52,8 +52,12 @@ class PengajuanController extends Controller
             ->first();
 
         if (!$pengajuan) {
-            return response()->json(['message' => 'Belum ada pengajuan.'], 404);
-        }
+        return response()->json([
+            'message' => 'Belum ada pengajuan.',
+            'data' => null
+        ], 200); // atau tetap 404 jika kamu ingin frontend tangani sebagai "tidak ditemukan"
+    }
+
 
         return response()->json([
             'message' => 'Status pengajuan ditemukan',
