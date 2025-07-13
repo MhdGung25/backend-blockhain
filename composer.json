@@ -7,6 +7,8 @@
     "require": {
         "php": "^8.2",
         "doctrine/dbal": "^4.2",
+        "kornrunner/ethereum-offline-raw-tx": "^0.8.0",
+        "kornrunner/keccak": "^1.1",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"

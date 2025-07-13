@@ -8,20 +8,26 @@ use App\Http\Controllers\Api\PengajuanController;
 use App\Http\Controllers\Api\ProfilUMKMController;
 use App\Http\Controllers\Api\TransaksiController;
 use App\Http\Controllers\Api\BlockchainController;
+use App\Http\Controllers\Api\BlockchainAuthController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 | Endpoint untuk konsumsi aplikasi frontend (misalnya Flutter).
-| Semua route yang membutuhkan autentikasi dibungkus dengan middleware 'auth:sanctum'.
+| Public route = tidak perlu token.
+| Protected route = butuh token (auth:sanctum).
 */
 
 // 🟡 AUTH - Register & Login (Public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// 🔐 PROTECTED ROUTES - Hanya bisa diakses setelah login
+// 🔗 Blockchain Signature Verification (Public)
+Route::post('/auth/request-message', [BlockchainAuthController::class, 'requestMessage']);
+Route::post('/auth/verify-signature', [BlockchainAuthController::class, 'verifySignature']);
+
+// 🔐 PROTECTED ROUTES - Hanya bisa diakses setelah login (auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
 
     // 🔐 Logout
@@ -46,7 +52,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // 🔴 Pengajuan Modal
     Route::get('/pengajuan', [PengajuanController::class, 'status']);
     Route::post('/pengajuan', [PengajuanController::class, 'store']);
-    
 
     // 🔗 Blockchain Hash Storage
     Route::post('/store-hash', [BlockchainController::class, 'storeHash']);
@@ -54,16 +59,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // 🧑‍💼 ADMIN ONLY - Khusus user dengan role admin
     Route::middleware('role:admin')->group(function () {
-
-        // Manajemen Pengajuan
         Route::get('/pengajuan/all', [PengajuanController::class, 'index']);
         Route::put('/pengajuan/verifikasi/{id}', [PengajuanController::class, 'verifikasi']);
 
-        // Admin Dashboard Info
         Route::get('/admin-dashboard', function () {
             return response()->json(['message' => 'Khusus Admin']);
         });
-
     });
-
 });
